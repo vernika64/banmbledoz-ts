@@ -9,7 +9,7 @@ const app = express();
 const HOST: string = '127.0.0.1';
 const PORT: number = 4000;
 
-const db = createConnection();
+const db = createPool();
 
 app.use(bodyParser.json());
 app.use(express.urlencoded({extended: true}));
@@ -50,27 +50,6 @@ app.get('/getProducts', async (req: Request, res: Response) => {
             data: rows
         });
         
-    } catch (error) {
-        console.log(`[500] ${req.originalUrl} SERVER ERROR`);
-        res.status(500).json({
-            status: 'error',
-            message: 'Server Error'
-        });
-    }
-});
-
-app.get('/getProductsPool', async (req: Request, res: Response) => {
-    try {
-        const pool = (await createPool()).promise();
-
-        const [rows] = await pool.query('SELECT * FROM products');
-
-        const response: JsonAPIOutput = {
-            status: 'success',
-            message: 'Data berhasil diambil',
-            data: rows
-        };
-        res.status(200).json(response);
     } catch (error) {
         console.log(`[500] ${req.originalUrl} SERVER ERROR`);
         res.status(500).json({
