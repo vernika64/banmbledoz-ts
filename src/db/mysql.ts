@@ -4,7 +4,7 @@ export async function createConnection(): Promise<mysql.Connection> {
     return mysql.createConnection({
         host: '127.0.0.1',
         user: 'root',
-        password: '',
+        password: 'root',
         database: 'banmbledoz'
     });
 }

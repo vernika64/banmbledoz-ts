@@ -2,6 +2,7 @@ import express, { Request, Response } from "express";
 import bodyParser  from "body-parser";
 import cors from 'cors';
 import { createConnection } from "./db/mysql";
+import { Products, ProductForms } from "./interfaces/Products";
 
 const app = express();
 const HOST: string = '127.0.0.1';
@@ -23,13 +24,13 @@ app.get('/', (req: Request, res: Response) => {
             status: 'success',
             message: 'Service is listening'
         });
-        console.log(`[200] / OK`)
+        console.log(`[200] ${req.originalUrl} OK`);
     } catch (error) {
         res.status(500).json({
             status: 'error',
             message: 'Server Error'
         });
-        console.log(`[500] / SERVER ERROR`);
+        console.log(`[500] ${req.originalUrl} SERVER ERROR`);
         console.log(error);
     }
 });
@@ -40,6 +41,8 @@ app.get('/getProducts', async (req: Request, res: Response) => {
 
         const [rows, fields] = await connection.promise().execute('SELECT * FROM products');
 
+        console.log(`[200] ${req.originalUrl} OK`);
+
         res.status(200).json({
             status: 'success',
             message: 'Data berhasil diambil',
@@ -47,6 +50,7 @@ app.get('/getProducts', async (req: Request, res: Response) => {
         });
         
     } catch (error) {
+        console.log(`[500] ${req.originalUrl} SERVER ERROR`);
         res.status(500).json({
             status: 'error',
             message: 'Server Error'
@@ -54,24 +58,33 @@ app.get('/getProducts', async (req: Request, res: Response) => {
     }
 });
 
-app.post('/insertProducts', async (req: Request, res: Response) => {
+app.post('/insertProduct', async (req: Request, res: Response) => {
     try {
-        const data = req.body;
+        const data: ProductForms = req.body;
 
         const connection = await db;
 
-        const query = 'INSERT INTO products (productId, productName, productPrice, productCategory) VALUES (?, ?, ?, ?)';
+        const query: string = 'INSERT INTO products (productId, productName, productPrice, productCategory) VALUES (?, ?, ?, ?)';
 
+        const values: [string, string, number, string] = [
+            data.PRODUCT_ID,
+            data.NAME,
+            data.PRICE,
+            data.CATEGORY
+        ];
 
-        const [rows, fields] = await connection.promise().execute('SELECT * FROM products');
+        connection.execute(query, values);
+
+        console.log(`[200] ${req.originalUrl} OK`);
 
         res.status(200).json({
             status: 'success',
-            message: 'Data berhasil diambil',
-            data: rows
+            message: 'Data berhasil ditambahkan'
         });
         
     } catch (error) {
+        console.log(`[500] ${req.originalUrl} SERVER ERROR`);
+        console.log(error);
         res.status(500).json({
             status: 'error',
             message: 'Server Error'
