@@ -74,7 +74,7 @@ app.post('/insertProduct', async (req: Request, res: Response) => {
             data.CATEGORY
         ];
 
-        connection.execute(query, values);
+        connection.promise().execute(query, values);
 
         console.log(`[200] ${req.originalUrl} OK`);
 
